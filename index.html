@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ahmad Yardan | Web Developer Portfolio</title>
+    <title>Ahmad Yardan Alim Al Haidi | Portfolio 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link
@@ -17,7 +17,6 @@
         overflow-x: hidden;
       }
 
-      /* Latar Cahaya Ambient Biru */
       .ambient-glow {
         background: radial-gradient(
             circle at 20% 25%,
@@ -31,7 +30,6 @@
           );
       }
 
-      /* Kartu Glassmorphism */
       .glass-card {
         background: rgba(15, 23, 42, 0.65);
         backdrop-filter: blur(12px);
@@ -39,7 +37,25 @@
         border: 1px solid rgba(51, 65, 85, 0.6);
       }
 
-      /* Efek Flip 3D untuk Kartu Lanyard */
+      /* Navbar Pill Styling */
+      .nav-pill-active {
+        background-color: rgba(23, 37, 84, 0.95);
+        border: 1px solid rgba(59, 130, 246, 0.45);
+        color: #ffffff;
+        font-weight: 700;
+        box-shadow: 0 0 15px rgba(37, 99, 235, 0.25);
+      }
+      .nav-pill-inactive {
+        background-color: transparent;
+        border: 1px solid transparent;
+        color: #cbd5e1;
+        font-weight: 500;
+      }
+      .nav-pill-inactive:hover {
+        color: #ffffff;
+      }
+
+      /* Efek Flip 3D Kartu Lanyard */
       .perspective-1000 {
         perspective: 1000px;
       }
@@ -55,14 +71,18 @@
         transform: rotateY(180deg);
       }
 
-      /* Efek Masker Reveal pada Foto About Me */
-      .mask-overlay {
-        clip-path: inset(0 0 0 0);
-        transition: clip-path 0.65s cubic-bezier(0.65, 0, 0.35, 1);
+      /* Transisi Lensa Lapisan Ganda Cutout About Me */
+      .about-reveal-layer {
+        --mx: 50%;
+        --my: 40%;
+        clip-path: circle(0px at var(--mx) var(--my));
+        transition: clip-path 0.18s ease-out;
       }
-      .about-photo-wrapper:hover .mask-overlay,
-      .about-photo-wrapper.revealed .mask-overlay {
-        clip-path: inset(100% 0 0 0);
+      .about-cutout-box:hover .about-reveal-layer {
+        clip-path: circle(85px at var(--mx) var(--my));
+      }
+      .about-cutout-box.toggled .about-reveal-layer {
+        clip-path: circle(150% at 50% 50%);
       }
     </style>
   </head>
@@ -77,35 +97,39 @@
     <!-- Floating Pill Navbar -->
     <header class="fixed top-5 left-0 right-0 z-50 flex justify-center px-4">
       <nav
-        class="glass-card rounded-full px-3 py-2 flex items-center gap-1 sm:gap-2 shadow-2xl shadow-blue-950/50"
+        class="bg-[#0b1120]/85 backdrop-blur-xl border border-slate-800/90 rounded-full px-2.5 py-2 flex items-center gap-1 sm:gap-2 shadow-2xl shadow-blue-950/60"
       >
         <a
           href="#home"
-          class="nav-link px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-white bg-blue-600/20 border border-blue-500/40 transition"
+          data-section="home"
+          class="nav-link sfx-click px-4 py-1.5 rounded-full text-xs sm:text-sm nav-pill-active transition-all duration-200"
           >Home</a
         >
         <a
           href="#about"
-          class="nav-link px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition"
+          data-section="about"
+          class="nav-link sfx-click px-4 py-1.5 rounded-full text-xs sm:text-sm nav-pill-inactive transition-all duration-200"
           >About</a
         >
         <a
           href="#portfolio"
-          class="nav-link px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition"
+          data-section="portfolio"
+          class="nav-link sfx-click px-4 py-1.5 rounded-full text-xs sm:text-sm nav-pill-inactive transition-all duration-200"
           >Portfolio</a
         >
         <a
           href="#contact"
-          class="nav-link px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition"
+          data-section="contact"
+          class="nav-link sfx-click px-4 py-1.5 rounded-full text-xs sm:text-sm nav-pill-inactive transition-all duration-200"
           >Contact</a
         >
         <button
-          id="btnAmbientAudio"
-          onclick="toggleAmbientSound()"
-          title="Putar / Hentikan Efek Suara"
-          class="ml-1 w-8 h-8 rounded-full bg-slate-800/80 hover:bg-blue-600 text-slate-300 hover:text-white flex items-center justify-center transition"
+          id="btnSoundToggle"
+          onclick="toggleSound()"
+          title="Aktifkan / Matikan Efek Suara"
+          class="ml-1 w-8 h-8 rounded-full bg-slate-800/90 hover:bg-blue-600 text-sky-400 hover:text-white flex items-center justify-center transition"
         >
-          <i id="audioIcon" class="fa-solid fa-volume-xmark text-xs"></i>
+          <i id="soundIcon" class="fa-solid fa-volume-high text-xs"></i>
         </button>
       </nav>
     </header>
@@ -115,16 +139,21 @@
       id="home"
       class="relative z-10 min-h-screen max-w-6xl mx-auto px-6 pt-28 pb-16 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center"
     >
-      <!-- Kolom Kiri: Teks Perkenalan -->
+      <!-- Kolom Kiri -->
       <div class="lg:col-span-7 space-y-6">
         <div>
+          <span
+            class="inline-block text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-full bg-blue-600/20 border border-blue-500/30 text-sky-300 mb-3"
+          >
+            Portfolio 2026 • S1 Sistem Informasi
+          </span>
           <h1
             class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight"
           >
-            Welcome to<br />
+            Ahmad Yardan<br />
             <span
               class="bg-gradient-to-r from-blue-500 via-sky-400 to-cyan-300 bg-clip-text text-transparent"
-              >My Portfolio</span
+              >Alim Al Haidi</span
             >
           </h1>
           <div class="h-8 mt-3 flex items-center">
@@ -139,95 +168,109 @@
         </div>
 
         <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-xl">
-          Berawal dari rasa penasaran terhadap cara kerja sistem informasi,
-          sekarang menjadi passion. Saya suka mengeksplorasi pengembangan web
-          modern, manajemen basis data, dan merancang aplikasi fungsional yang
-          nyaman digunakan.
+          Mahasiswa aktif Program Studi Sistem Informasi di Universitas Sunan
+          Gresik yang memiliki minat mendalam pada pengembangan web,
+          administrasi basis data MySQL, serta perancangan topografi jaringan
+          komputer menggunakan Cisco Packet Tracer.
         </p>
 
         <div class="flex flex-wrap gap-4 pt-2">
           <a
             href="#portfolio"
-            class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-blue-600/30 transition"
+            onclick="setActiveNav('portfolio')"
+            class="sfx-click px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-blue-600/30 transition"
           >
             Lihat Projek <i class="fa-solid fa-arrow-right text-xs"></i>
           </a>
           <a
             href="#contact"
-            class="px-6 py-3 rounded-xl glass-card hover:border-blue-500/50 text-slate-200 font-semibold text-sm flex items-center gap-2 transition"
+            onclick="setActiveNav('contact')"
+            class="sfx-click px-6 py-3 rounded-xl glass-card hover:border-blue-500/50 text-slate-200 font-semibold text-sm flex items-center gap-2 transition"
           >
             Hubungi Saya <i class="fa-regular fa-paper-plane text-xs"></i>
           </a>
         </div>
 
-        <div class="pt-4 flex items-center gap-4 text-slate-400 text-xs">
+        <!-- FIND ME Hero Icons -->
+        <div class="pt-4 flex items-center gap-5 text-slate-400 text-xs">
           <span class="tracking-widest uppercase font-semibold text-slate-500"
             >FIND ME</span
           >
           <a
             href="https://github.com/aalkepo88-design"
             target="_blank"
-            class="hover:text-white text-base transition"
+            rel="noopener noreferrer"
+            title="GitHub"
+            class="sfx-click hover:text-white text-lg transition"
             ><i class="fa-brands fa-github"></i
           ></a>
           <a
-            href="#contact"
-            class="hover:text-white text-base transition"
+            id="heroIgLink"
+            href="https://www.instagram.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Instagram"
+            class="sfx-click hover:text-pink-400 text-lg transition"
             ><i class="fa-brands fa-instagram"></i
           ></a>
           <a
-            href="#contact"
-            class="hover:text-white text-base transition"
+            id="heroTiktokLink"
+            href="https://www.tiktok.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="TikTok"
+            class="sfx-click hover:text-cyan-300 text-lg transition"
             ><i class="fa-brands fa-tiktok"></i
           ></a>
         </div>
       </div>
 
-      <!-- Kolom Kanan: Kartu ID Lanyard Interaktif -->
+      <!-- Kolom Kanan: Kartu ID Lanyard 2D Draggable + Flip 3D -->
       <div
-        class="lg:col-span-5 flex flex-col items-center justify-start relative min-h-[430px] select-none"
+        id="lanyardStage"
+        class="lg:col-span-5 flex flex-col items-center justify-start relative min-h-[460px] select-none touch-none"
       >
-        <!-- Tali Lanyard (Dinamis mengikuti posisi kartu) -->
         <svg
           id="lanyardSvg"
-          class="w-full h-44 overflow-visible pointer-events-none -mb-6 z-10"
+          viewBox="0 0 360 460"
+          class="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible"
         >
           <line
             id="strapLeft"
-            x1="44%"
-            y1="-40"
-            x2="47%"
-            y2="135"
+            x1="158"
+            y1="-30"
+            x2="174"
+            y2="120"
             stroke="#0f172a"
             stroke-width="14"
             stroke-linecap="round"
           />
           <line
             id="strapRight"
-            x1="56%"
-            y1="-40"
-            x2="53%"
-            y2="135"
+            x1="202"
+            y1="-30"
+            x2="186"
+            y2="120"
             stroke="#1e293b"
             stroke-width="14"
             stroke-linecap="round"
           />
-          <text
-            x="45.5%"
-            y="65"
-            fill="#60a5fa"
-            font-size="8"
-            font-weight="bold"
-            transform="rotate(83, 185, 65)"
-          >
-            SISTEM INFORMASI • USG
-          </text>
+          <line
+            id="strapHighlight"
+            x1="158"
+            y1="-30"
+            x2="174"
+            y2="120"
+            stroke="#3b82f6"
+            stroke-width="2"
+            stroke-dasharray="6 6"
+            opacity="0.65"
+          />
         </svg>
 
-        <!-- Pengait Besi Lanyard -->
         <div
           id="lanyardRig"
-          class="cursor-grab active:cursor-grabbing z-20 flex flex-col items-center"
+          class="relative mt-28 cursor-grab active:cursor-grabbing z-20 flex flex-col items-center will-change-transform"
           style="transform-origin: top center"
         >
           <div
@@ -235,15 +278,14 @@
           ></div>
           <div class="w-10 h-2.5 rounded-sm bg-slate-300 -mt-0.5 shadow"></div>
 
-          <!-- Kartu ID 3D (Bisa di-Drag & Di-Klik untuk Flip) -->
           <div
             id="idCardContainer"
-            class="w-64 h-88 perspective-1000 mt-1"
-            title="Tarik untuk mengayunkan • Klik untuk membalik kartu"
+            class="w-64 perspective-1000 mt-1"
+            title="Tarik ke mana saja untuk mengayunkan • Klik untuk membalik kartu"
           >
             <div
               id="idCardInner"
-              class="relative w-full h-[340px] preserve-3d rounded-2xl shadow-2xl shadow-blue-950/80"
+              class="relative w-full h-[345px] preserve-3d rounded-2xl shadow-2xl shadow-blue-950/90"
             >
               <!-- SISI DEPAN KARTU -->
               <div
@@ -251,7 +293,7 @@
               >
                 <div class="flex justify-between items-center z-10">
                   <span
-                    class="text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded bg-blue-600/30 text-blue-300 border border-blue-400/30"
+                    class="text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded bg-blue-600/30 text-sky-300 border border-blue-400/30"
                     >2026</span
                   >
                   <span class="text-[10px] font-bold text-slate-300"
@@ -263,19 +305,18 @@
                   <p
                     class="text-2xl font-black tracking-tight text-white leading-none"
                   >
-                    WEB<br /><span class="text-sky-400">DEVELOPER</span>
+                    SISTEM<br /><span class="text-sky-400">INFORMASI</span>
                   </p>
                 </div>
 
-                <!-- Foto Profil pada ID Card (Ganti src dengan foto Anda) -->
                 <div
                   class="relative w-full h-40 rounded-xl overflow-hidden bg-slate-800 border border-slate-700/80 flex items-center justify-center"
                 >
                   <img
                     src="foto-profil.jpg"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                    onerror="this.src='foto-profil.png'; this.onerror=function(){this.style.display='none'; this.nextElementSibling.style.display='flex';};"
                     alt="Ahmad Yardan"
-                    class="w-full h-full object-cover"
+                    class="w-full h-full object-cover pointer-events-none"
                   />
                   <div
                     class="hidden flex-col items-center justify-center text-slate-400 text-xs text-center p-3"
@@ -297,20 +338,20 @@
                       AHMAD YARDAN A.
                     </p>
                     <p class="text-[10px] text-sky-400 font-medium">
-                      Information Systems
+                      Full-Stack Web Developer
                     </p>
                   </div>
-                  <span class="text-[9px] text-slate-400">Klik: Balik ↻</span>
+                  <span class="text-[9px] text-slate-400">Tarik / Balik ↻</span>
                 </div>
               </div>
 
-              <!-- SISI BELAKANG KARTU (QR SOSMED) -->
+              <!-- SISI BELAKANG KARTU -->
               <div
                 class="backface-hidden rotate-y-180 absolute inset-0 rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 border border-sky-400/40 p-5 flex flex-col items-center justify-between text-center"
               >
                 <div class="w-full flex justify-between items-center">
                   <span class="text-[10px] font-bold text-sky-400"
-                    >SCAN HERE</span
+                    >PORTFOLIO 2026</span
                   >
                   <span class="text-[10px] font-bold text-slate-400"
                     >HIMASI USG</span
@@ -324,7 +365,6 @@
                   <div
                     class="w-36 h-36 mx-auto bg-white p-2.5 rounded-xl shadow-inner flex items-center justify-center"
                   >
-                    <!-- SVG QR Code -->
                     <svg
                       viewBox="0 0 100 100"
                       class="w-full h-full text-slate-950 fill-current"
@@ -341,7 +381,7 @@
                     AHMAD YARDAN ALIM AL HAIDI
                   </p>
                   <p class="text-[10px] text-slate-400">
-                    github.com/aalkepo88-design
+                    S1 Sistem Informasi • USG
                   </p>
                 </div>
               </div>
@@ -351,12 +391,13 @@
       </div>
     </section>
 
-    <!-- ABOUT ME SECTION -->
+    <!-- ABOUT ME, EDUCATION, ORGANIZATIONAL & COMMITTEE EXPERIENCE -->
     <section id="about" class="relative z-10 max-w-6xl mx-auto px-6 py-24">
       <h2 class="text-3xl sm:text-5xl font-extrabold text-center mb-16">
         About Me
       </h2>
 
+      <!-- Profil & Narasi dari Portofolio -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 items-center">
         <!-- Kiri: Nama -->
         <div class="space-y-4 text-center lg:text-left">
@@ -364,148 +405,404 @@
           <h3 class="text-3xl sm:text-4xl font-extrabold leading-tight">
             Ahmad Yardan<br />Alim Al Haidi
           </h3>
+          <p class="text-xs font-bold uppercase tracking-widest text-slate-400">
+            S1 Sistem Informasi • Universitas Sunan Gresik
+          </p>
           <div class="pt-2">
             <a
               href="#contact"
-              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-semibold transition"
+              onclick="setActiveNav('contact')"
+              class="sfx-click inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-sm font-semibold transition"
             >
               <i class="fa-regular fa-envelope"></i> Hubungi Saya
             </a>
           </div>
         </div>
 
-        <!-- Tengah: Foto Profil dengan Efek Masker -->
+        <!-- Tengah: Foto Cutout Tanpa Background + Efek Lensa Lapisan Ganda -->
         <div class="flex justify-center">
           <div
-            onclick="this.classList.toggle('revealed')"
-            class="about-photo-wrapper relative w-64 h-80 rounded-2xl overflow-hidden glass-card border-2 border-blue-500/30 shadow-2xl cursor-pointer group"
-            title="Arahkan kursor atau klik untuk membuka masker"
+            id="aboutCutoutBox"
+            onclick="this.classList.toggle('toggled')"
+            class="about-cutout-box sfx-click relative w-72 h-96 flex items-end justify-center cursor-pointer select-none"
+            title="Arahkan kursor atau klik untuk efek transisi foto"
           >
-            <!-- Foto Asli di Lapisan Bawah -->
             <img
-              src="foto-profil.jpg"
-              onerror="this.style.display='none'"
+              src="foto-profil.png"
+              onerror="this.src='foto-profil.jpg';"
               alt="Ahmad Yardan Alim Al Haidi"
-              class="w-full h-full object-cover"
+              class="w-full h-full object-contain object-bottom drop-shadow-[0_14px_28px_rgba(37,99,235,0.28)]"
+              style="
+                mask-image: linear-gradient(
+                  to bottom,
+                  black 82%,
+                  transparent 100%
+                );
+                -webkit-mask-image: linear-gradient(
+                  to bottom,
+                  black 82%,
+                  transparent 100%
+                );
+              "
             />
-            <div
-              class="absolute inset-0 -z-10 bg-gradient-to-b from-slate-800 to-slate-950 flex flex-col items-center justify-center p-4 text-center"
-            >
-              <i class="fa-solid fa-code text-4xl text-blue-500 mb-3"></i>
-              <p class="font-bold text-sm">Ahmad Yardan</p>
-              <p class="text-xs text-slate-400">Sistem Informasi USG</p>
-            </div>
-
-            <!-- Lapisan Masker di Atas (Tersibak saat hover/klik) -->
-            <div
-              class="mask-overlay absolute inset-0 bg-gradient-to-b from-red-700 via-red-600 to-slate-900 flex flex-col items-center justify-center p-6 text-center"
-            >
-              <i class="fa-solid fa-mask text-6xl text-white/90 mb-3"></i>
-              <span
-                class="text-xs font-bold uppercase tracking-widest bg-black/30 px-3 py-1 rounded-full text-white"
-              >
-                Hover / Klik Reveal
-              </span>
-            </div>
+            <img
+              src="foto-masker.png"
+              onerror="this.src='foto-profil.jpg'; this.style.filter='hue-rotate(190deg) saturate(1.8) contrast(1.15)';"
+              alt="Layer Reveal"
+              class="about-reveal-layer absolute inset-0 w-full h-full object-contain object-bottom pointer-events-none"
+              style="
+                mask-image: linear-gradient(
+                  to bottom,
+                  black 82%,
+                  transparent 100%
+                );
+                -webkit-mask-image: linear-gradient(
+                  to bottom,
+                  black 82%,
+                  transparent 100%
+                );
+              "
+            />
           </div>
         </div>
 
-        <!-- Kanan: Deskripsi -->
-        <div class="space-y-5 text-slate-300 text-sm sm:text-base leading-relaxed">
+        <!-- Kanan: Deskripsi Lengkap dari File Portofolio -->
+        <div class="space-y-4 text-slate-300 text-sm leading-relaxed">
           <p>
-            Saya adalah mahasiswa <strong class="text-white">Sistem Informasi</strong> di
-            Universitas Sunan Gresik yang berfokus pada pengembangan aplikasi
-            web fungsional sekaligus menarik secara visual.
+            Saya merupakan mahasiswa aktif Program Studi
+            <strong class="text-white">Sistem Informasi</strong> di
+            <strong class="text-sky-400">Universitas Sunan Gresik</strong> yang
+            memiliki minat mendalam pada pengembangan web, administrasi basis
+            data, serta perancangan jaringan komputer. Memiliki pengalaman dan
+            pemahaman teknis dalam mengelola basis data
+            <strong class="text-white">MySQL</strong>, merancang topografi
+            jaringan menggunakan
+            <strong class="text-white">Cisco Packet Tracer</strong>, serta
+            membangun aplikasi web interaktif berbasis
+            <strong class="text-sky-400"
+              >HTML, Tailwind CSS, JavaScript, dan Supabase</strong
+            >.
           </p>
           <p>
-            Dengan <strong class="text-sky-400">HTML, Tailwind CSS, JavaScript, dan Supabase</strong>,
-            saya mengubah kebutuhan administrasi maupun ide digital menjadi
-            sistem web yang responsif, terstruktur, dan siap pakai.
+            Saya dikenal sebagai pribadi yang teliti, komunikatif, dan senang
+            memecahkan masalah. Melalui keaktifan berorganisasi di
+            <strong class="text-white">HIMASI</strong>, saya terbiasa bekerja
+            sama dalam tim dan mengelola proyek. Saya siap berkontribusi secara
+            profesional di bidang pengembangan perangkat lunak, pengelolaan
+            data, maupun solusi teknologi informasi lainnya.
           </p>
-          <div class="pt-1">
-            <a
-              href="#portfolio"
-              class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl glass-card hover:border-blue-500/50 text-white text-sm font-semibold transition"
+        </div>
+      </div>
+
+      <!-- EDUCATION (3 SEKOLAH / KAMPUS) -->
+      <div class="mt-20">
+        <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+          <i class="fa-solid fa-graduation-cap text-sky-400"></i> Education
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- 1. Universitas Sunan Gresik -->
+          <div
+            class="glass-card p-6 rounded-2xl flex items-start gap-4 hover:border-blue-500/40 transition"
+          >
+            <div
+              class="w-12 h-12 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-sky-400 text-xl shrink-0"
             >
-              Lihat Projek <i class="fa-solid fa-arrow-right text-xs"></i>
-            </a>
+              <i class="fa-solid fa-university"></i>
+            </div>
+            <div>
+              <span
+                class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-600/20 text-sky-300"
+                >Perguruan Tinggi</span
+              >
+              <h4 class="font-bold text-white mt-1.5">
+                Universitas Sunan Gresik
+              </h4>
+              <p class="text-xs text-sky-400 font-medium mt-0.5">
+                Mahasiswa Program Studi Sistem Informasi
+              </p>
+              <p class="text-[11px] text-slate-400 mt-1">
+                S1 Sistem Informasi • Aktif
+              </p>
+            </div>
+          </div>
+
+          <!-- 2. MA Al-Karimi -->
+          <div
+            class="glass-card p-6 rounded-2xl flex items-start gap-4 hover:border-blue-500/40 transition"
+          >
+            <div
+              class="w-12 h-12 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl shrink-0"
+            >
+              <i class="fa-solid fa-school"></i>
+            </div>
+            <div>
+              <span
+                class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-600/20 text-emerald-300"
+                >Pendidikan Menengah Atas</span
+              >
+              <h4 class="font-bold text-white mt-1.5">MA Al-Karimi</h4>
+              <p class="text-xs text-emerald-400 font-medium mt-0.5">
+                Jurusan IPA
+              </p>
+              <p class="text-[11px] text-slate-400 mt-1">
+                Menempuh Pendidikan Menengah Jurusan IPA
+              </p>
+            </div>
+          </div>
+
+          <!-- 3. MTs Al-Karimi (Tambahan) -->
+          <div
+            class="glass-card p-6 rounded-2xl flex items-start gap-4 hover:border-blue-500/40 transition"
+          >
+            <div
+              class="w-12 h-12 rounded-xl bg-cyan-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xl shrink-0"
+            >
+              <i class="fa-solid fa-book-open-reader"></i>
+            </div>
+            <div>
+              <span
+                class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-cyan-600/20 text-cyan-300"
+                >Pendidikan Menengah Pertama</span
+              >
+              <h4 class="font-bold text-white mt-1.5">MTs Al-Karimi</h4>
+              <p class="text-xs text-cyan-400 font-medium mt-0.5">
+                Madrasah Tsanawiyah
+              </p>
+              <p class="text-[11px] text-slate-400 mt-1">
+                Menempuh Pendidikan Menengah Pertama
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Education & Experience -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-20">
-        <div>
-          <h4 class="text-lg font-bold mb-4 text-slate-200">Education</h4>
-          <div class="glass-card p-5 rounded-2xl flex items-center gap-4">
-            <div
-              class="w-14 h-14 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-sky-400 text-2xl shrink-0"
-            >
-              <i class="fa-solid fa-graduation-cap"></i>
-            </div>
+      <!-- ORGANIZATIONAL EXPERIENCE (HIMASI MIBA) -->
+      <div class="mt-16">
+        <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+          <i class="fa-solid fa-users-gear text-emerald-400"></i> Organizational
+          Experience
+        </h3>
+        <div class="glass-card p-6 sm:p-8 rounded-2xl border border-slate-800">
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 border-b border-slate-800"
+          >
             <div>
-              <h5 class="font-bold text-white">Universitas Sunan Gresik</h5>
-              <p class="text-xs text-sky-400 font-medium">
-                S1 Sistem Informasi
+              <h4 class="text-xl font-bold text-white">
+                Anggota Minat Bakat (MIBA)
+              </h4>
+              <p class="text-sm text-sky-400 font-semibold">
+                Himpunan Mahasiswa Sistem Informasi (HIMASI) — Universitas Sunan
+                Gresik
               </p>
-              <p class="text-xs text-slate-400 mt-0.5">
-                Gresik, Jawa Timur • Aktif
-              </p>
+            </div>
+            <span
+              class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 w-fit"
+            >
+              Departemen Minat & Bakat
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-5">
+            <div>
+              <h5
+                class="text-xs font-bold uppercase tracking-wider text-sky-400 mb-3"
+              >
+                Tanggung Jawab
+              </h5>
+              <ul class="space-y-2 text-xs sm:text-sm text-slate-300">
+                <li class="flex items-start gap-2">
+                  <i
+                    class="fa-solid fa-circle-check text-sky-400 mt-1 text-xs"
+                  ></i>
+                  <span
+                    >Berpartisipasi dalam perencanaan dan pelaksanaan berbagai
+                    kegiatan pengembangan minat dan bakat mahasiswa.</span
+                  >
+                </li>
+                <li class="flex items-start gap-2">
+                  <i
+                    class="fa-solid fa-circle-check text-sky-400 mt-1 text-xs"
+                  ></i>
+                  <span
+                    >Membantu koordinasi antara pengurus HIMASI dan mahasiswa
+                    dalam penyelenggaraan program kerja.</span
+                  >
+                </li>
+                <li class="flex items-start gap-2">
+                  <i
+                    class="fa-solid fa-circle-check text-sky-400 mt-1 text-xs"
+                  ></i>
+                  <span
+                    >Mendukung pelaksanaan kegiatan di bidang akademik maupun
+                    non-akademik sesuai penugasan.</span
+                  >
+                </li>
+                <li class="flex items-start gap-2">
+                  <i
+                    class="fa-solid fa-circle-check text-sky-400 mt-1 text-xs"
+                  ></i>
+                  <span
+                    >Berkontribusi dalam membangun keaktifan dan kreativitas
+                    mahasiswa di lingkungan program studi.</span
+                  >
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h5
+                class="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-3"
+              >
+                Pencapaian
+              </h5>
+              <ul class="space-y-2 text-xs sm:text-sm text-slate-300">
+                <li class="flex items-start gap-2">
+                  <i
+                    class="fa-solid fa-star text-amber-400 mt-1 text-xs"
+                  ></i>
+                  <span
+                    >Berperan aktif dalam mendukung kelancaran seluruh program
+                    kerja departemen Minat Bakat.</span
+                  >
+                </li>
+                <li class="flex items-start gap-2">
+                  <i
+                    class="fa-solid fa-star text-amber-400 mt-1 text-xs"
+                  ></i>
+                  <span
+                    >Mengembangkan kemampuan komunikasi, koordinasi, dan kerja
+                    sama tim secara berkelanjutan.</span
+                  >
+                </li>
+                <li class="flex items-start gap-2">
+                  <i
+                    class="fa-solid fa-star text-amber-400 mt-1 text-xs"
+                  ></i>
+                  <span
+                    >Meningkatkan kemampuan kepemimpinan serta rasa tanggung
+                    jawab dalam menyelesaikan tugas organisasi.</span
+                  >
+                </li>
+              </ul>
             </div>
           </div>
         </div>
+      </div>
 
-        <div>
-          <h4 class="text-lg font-bold mb-4 text-slate-200">Experience</h4>
-          <div class="glass-card p-5 rounded-2xl flex items-center gap-4">
-            <div
-              class="w-14 h-14 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl shrink-0"
-            >
-              <i class="fa-solid fa-users-gear"></i>
-            </div>
+      <!-- COMMITTEE EXPERIENCE (3 KEPANITIAAN) -->
+      <div class="mt-16">
+        <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+          <i class="fa-solid fa-clipboard-list text-amber-400"></i> Committee
+          Experience
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Kepanitiaan 1: OSI -->
+          <div
+            class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-4 hover:border-blue-500/40 transition"
+          >
             <div>
-              <h5 class="font-bold text-white">HIMASI USG</h5>
-              <p class="text-xs text-emerald-400 font-medium">
-                Himpunan Mahasiswa Sistem Informasi
-              </p>
-              <p class="text-xs text-slate-400 mt-0.5">
-                Pengembangan Sistem & Kegiatan Organisasi
-              </p>
+              <span
+                class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-blue-600/20 text-sky-300 border border-blue-500/30"
+                >Divisi Kedisiplinan</span
+              >
+              <h4 class="text-base font-bold text-white mt-3">
+                Panitia Orientasi Mahasiswa Sistem Informasi (OSI)
+              </h4>
+              <div class="mt-3 space-y-2 text-xs text-slate-300">
+                <p>
+                  <strong class="text-sky-400">Tanggung Jawab:</strong>
+                  Mengawasi dan menegakkan tata tertib peserta agar rangkaian
+                  orientasi berjalan tertib.
+                </p>
+                <p>
+                  <strong class="text-emerald-400">Pencapaian:</strong>
+                  Menjaga kondusifitas acara dan melatih ketegasan dalam
+                  manajemen lapangan.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kepanitiaan 2: MASIC -->
+          <div
+            class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-4 hover:border-blue-500/40 transition"
+          >
+            <div>
+              <span
+                class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-indigo-600/20 text-indigo-300 border border-indigo-500/30"
+                >Divisi Perlengkapan</span
+              >
+              <h4 class="text-base font-bold text-white mt-3">
+                Panitia Malka Islamic Competitions (MASIC)
+              </h4>
+              <div class="mt-3 space-y-2 text-xs text-slate-300">
+                <p>
+                  <strong class="text-sky-400">Tanggung Jawab:</strong>
+                  Menyiapkan, mengatur, dan mendistribusikan seluruh kebutuhan
+                  logistik lomba.
+                </p>
+                <p>
+                  <strong class="text-emerald-400">Pencapaian:</strong>
+                  Memastikan ketersediaan sarana tepat waktu guna mendukung
+                  kelancaran kompetisi.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kepanitiaan 3: GPP -->
+          <div
+            class="glass-card p-6 rounded-2xl flex flex-col justify-between space-y-4 hover:border-blue-500/40 transition"
+          >
+            <div>
+              <span
+                class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-emerald-600/20 text-emerald-300 border border-emerald-500/30"
+                >Divisi Keamanan</span
+              >
+              <h4 class="text-base font-bold text-white mt-3">
+                Panitia Giat Prestasi Penggalang (GPP)
+              </h4>
+              <div class="mt-3 space-y-2 text-xs text-slate-300">
+                <p>
+                  <strong class="text-sky-400">Tanggung Jawab:</strong>
+                  Mengamankan area kegiatan, mengatur arus peserta, serta
+                  mengantisipasi kendala ketertiban.
+                </p>
+                <p>
+                  <strong class="text-emerald-400">Pencapaian:</strong>
+                  Menciptakan lingkungan acara yang aman dan terkendali selama
+                  kegiatan pramuka berlangsung.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- PORTFOLIO SECTION (4 TABS) -->
+    <!-- PORTFOLIO SECTION (PROJECTS, SKILLS & KOMPETENSI, TECH STACK) -->
     <section id="portfolio" class="relative z-10 max-w-6xl mx-auto px-6 py-24">
       <h2 class="text-3xl sm:text-5xl font-extrabold text-center mb-10">
-        Portfolio
+        Portfolio & Skills
       </h2>
 
       <!-- Filter Tabs -->
       <div class="flex flex-wrap justify-center gap-3 mb-12">
         <button
           onclick="switchPortfolioTab('projects', this)"
-          class="port-tab px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/30 flex items-center gap-2 transition"
+          class="port-tab sfx-click px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/30 flex items-center gap-2 transition"
         >
           <i class="fa-solid fa-code"></i> Projects
         </button>
         <button
-          onclick="switchPortfolioTab('certificates', this)"
-          class="port-tab px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold glass-card text-slate-300 hover:text-white flex items-center gap-2 transition"
+          onclick="switchPortfolioTab('skills', this)"
+          class="port-tab sfx-click px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold glass-card text-slate-300 hover:text-white flex items-center gap-2 transition"
         >
-          <i class="fa-solid fa-certificate"></i> Certificates
-        </button>
-        <button
-          onclick="switchPortfolioTab('achievements', this)"
-          class="port-tab px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold glass-card text-slate-300 hover:text-white flex items-center gap-2 transition"
-        >
-          <i class="fa-solid fa-trophy"></i> Achievements
+          <i class="fa-solid fa-award"></i> Skills & Kompetensi
         </button>
         <button
           onclick="switchPortfolioTab('techstack', this)"
-          class="port-tab px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold glass-card text-slate-300 hover:text-white flex items-center gap-2 transition"
+          class="port-tab sfx-click px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold glass-card text-slate-300 hover:text-white flex items-center gap-2 transition"
         >
           <i class="fa-solid fa-layer-group"></i> Tech Stack
         </button>
@@ -514,245 +811,273 @@
       <!-- TAB 1: PROJECTS -->
       <div
         id="panel-projects"
-        class="port-panel grid grid-cols-1 md:grid-cols-3 gap-6"
+        class="port-panel grid grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto gap-8"
       >
-        <!-- Project 1 -->
+        <!-- Project 1: Aplikasi Web Peminjaman Barang Kampus (Sesuai PPTX) -->
         <div
           class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between group hover:border-blue-500/50 transition"
         >
           <div>
             <div
-              class="h-44 bg-gradient-to-br from-blue-950 to-slate-900 p-4 flex flex-col justify-between border-b border-slate-800 relative overflow-hidden"
+              class="h-48 bg-gradient-to-br from-blue-950 via-slate-900 to-slate-950 p-5 flex flex-col justify-between border-b border-slate-800 relative overflow-hidden"
             >
-              <span
-                class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-blue-600/30 text-sky-300 w-fit"
-                >Full-Stack Web</span
+              <div class="flex justify-between items-center">
+                <span
+                  class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-blue-600/30 text-sky-300 border border-blue-500/30"
+                  >First Project • 2026</span
+                >
+                <span class="text-[10px] font-semibold text-slate-400"
+                  >Full-Stack Web Developer</span
+                >
+              </div>
+              <div
+                class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 shadow-lg"
               >
-              <div class="bg-slate-950/80 border border-slate-800 rounded-lg p-3">
-                <div class="text-xs font-bold text-white">
-                  Portal Mahasiswa & Admin
+                <div class="flex items-center gap-1.5 mb-2">
+                  <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span class="text-[10px] text-slate-500 ml-1"
+                    >peminjaman-mahasiswa.vercel.app</span
+                  >
                 </div>
-                <div class="text-[10px] text-emerald-400 mt-1">
-                  ● Multi-Unit Cart & Export Excel
+                <div class="text-xs font-bold text-white">
+                  Portal Web Peminjam & Web Admin
+                </div>
+                <div class="text-[11px] text-emerald-400 mt-1">
+                  ● Manajemen Stok Real-Time & Export Excel
                 </div>
               </div>
             </div>
             <div class="p-6">
-              <h3 class="text-lg font-bold text-white mb-2">
-                Peminjaman Barang Kampus
+              <h3 class="text-xl font-bold text-white mb-2">
+                Aplikasi Web Peminjaman Barang Kampus
               </h3>
-              <p class="text-xs text-slate-400 leading-relaxed">
-                Sistem informasi peminjaman inventaris dan ruangan kampus dengan
-                portal mahasiswa, persetujuan admin, manajemen stok real-time,
-                dan ekspor laporan Excel.
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                Membangun sistem informasi berbasis web untuk mendigitalisasi
+                proses peminjaman barang dan ruangan di kampus secara terpusat.
+                Dilengkapi dengan dua portal antarmuka terpisah (Mahasiswa &
+                Admin), sistem login pengguna yang aman, manajemen stok barang
+                real-time, dan pelacakan riwayat status pengajuan.
               </p>
             </div>
           </div>
-          <div class="px-6 pb-6 flex items-center justify-between gap-2">
+          <div class="px-6 pb-6 flex flex-wrap items-center justify-between gap-2">
             <button
               onclick="bukaModalDetail(0)"
-              class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-blue-600 text-xs font-semibold text-white flex items-center gap-2 transition"
+              class="sfx-click px-4 py-2 rounded-xl bg-slate-800 hover:bg-blue-600 text-xs font-semibold text-white flex items-center gap-2 transition"
             >
               Details <i class="fa-solid fa-arrow-right text-[10px]"></i>
             </button>
-            <a
-              href="https://peminjaman-mahasiswa.vercel.app"
-              target="_blank"
-              class="text-xs text-sky-400 hover:underline font-medium"
-              >Live Demo ↗</a
-            >
+            <div class="flex items-center gap-3">
+              <a
+                href="https://peminjaman-mahasiswa.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sfx-click text-xs text-sky-400 hover:underline font-semibold"
+                >Web Peminjam ↗</a
+              >
+              <a
+                href="https://admin-peminjaman.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="sfx-click text-xs text-emerald-400 hover:underline font-semibold"
+                >Web Admin ↗</a
+              >
+            </div>
           </div>
         </div>
 
-        <!-- Project 2 -->
+        <!-- Project 2: Perancangan Basis Data & Simulasi Jaringan Komputer -->
         <div
           class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between group hover:border-blue-500/50 transition"
         >
           <div>
             <div
-              class="h-44 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-4 flex flex-col justify-between border-b border-slate-800"
+              class="h-48 bg-gradient-to-br from-slate-900 via-cyan-950 to-slate-950 p-5 flex flex-col justify-between border-b border-slate-800"
             >
               <span
-                class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-indigo-600/30 text-indigo-300 w-fit"
-                >Public Portal</span
+                class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-cyan-600/30 text-cyan-300 w-fit border border-cyan-500/30"
+                >Database & Network Architecture</span
               >
-              <div class="bg-slate-950/80 border border-slate-800 rounded-lg p-3">
-                <div class="text-xs font-bold text-white">
-                  Lost & Found Kampus
+              <div
+                class="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 shadow-lg"
+              >
+                <div class="flex items-center gap-1.5 mb-2">
+                  <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  <span class="text-[10px] text-slate-500 ml-1"
+                    >MySQL 3NF & Cisco Packet Tracer</span
+                  >
                 </div>
-                <div class="text-[10px] text-sky-400 mt-1">
-                  ● Pencarian & Filter Kategori
+                <div class="text-xs font-bold text-white">
+                  Administrasi Basis Data & Topografi Jaringan
+                </div>
+                <div class="text-[11px] text-amber-400 mt-1">
+                  ● Pemodelan ERD, Subnetting VLSM & Java OOP
                 </div>
               </div>
             </div>
             <div class="p-6">
-              <h3 class="text-lg font-bold text-white mb-2">
-                Pelaporan Barang Hilang
+              <h3 class="text-xl font-bold text-white mb-2">
+                Perancangan Basis Data & Topografi Jaringan
               </h3>
-              <p class="text-xs text-slate-400 leading-relaxed">
-                Aplikasi berbasis web untuk pelaporan serta pencarian barang
-                hilang dan temuan secara terpusat, dilengkapi fitur unggah foto
-                dan filter kategori.
+              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                Perancangan skema basis data relasional MySQL dengan normalisasi
+                hingga 3NF, simulasi topografi jaringan komputer menggunakan
+                Cisco Packet Tracer, serta pengembangan struktur data dan
+                pemrograman berorientasi objek berbasis Java.
               </p>
             </div>
           </div>
           <div class="px-6 pb-6 flex items-center justify-between gap-2">
             <button
               onclick="bukaModalDetail(1)"
-              class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-blue-600 text-xs font-semibold text-white flex items-center gap-2 transition"
+              class="sfx-click px-4 py-2 rounded-xl bg-slate-800 hover:bg-blue-600 text-xs font-semibold text-white flex items-center gap-2 transition"
             >
               Details <i class="fa-solid fa-arrow-right text-[10px]"></i>
             </button>
             <a
-              href="https://user-lostfound-portal.vercel.app"
+              href="https://github.com/aalkepo88-design"
               target="_blank"
-              class="text-xs text-sky-400 hover:underline font-medium"
-              >Live Demo ↗</a
+              rel="noopener noreferrer"
+              class="sfx-click text-xs text-sky-400 hover:underline font-semibold"
+              >GitHub ↗</a
             >
-          </div>
-        </div>
-
-        <!-- Project 3 -->
-        <div
-          class="glass-card rounded-2xl overflow-hidden flex flex-col justify-between group hover:border-blue-500/50 transition"
-        >
-          <div>
-            <div
-              class="h-44 bg-gradient-to-br from-slate-900 via-cyan-950 to-slate-900 p-4 flex flex-col justify-between border-b border-slate-800"
-            >
-              <span
-                class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-cyan-600/30 text-cyan-300 w-fit"
-                >Database & OOP</span
-              >
-              <div class="bg-slate-950/80 border border-slate-800 rounded-lg p-3">
-                <div class="text-xs font-bold text-white">
-                  Sistem Informasi Akademik
-                </div>
-                <div class="text-[10px] text-amber-400 mt-1">
-                  ● Normalisasi 3NF & Struktur Data
-                </div>
-              </div>
-            </div>
-            <div class="p-6">
-              <h3 class="text-lg font-bold text-white mb-2">
-                Perancangan Basis Data & OOP
-              </h3>
-              <p class="text-xs text-slate-400 leading-relaxed">
-                Implementasi pemodelan ERD, skema relasional MySQL, serta
-                pengembangan aplikasi berorientasi objek menggunakan Java dan
-                analisis data Python.
-              </p>
-            </div>
-          </div>
-          <div class="px-6 pb-6 flex items-center justify-between gap-2">
-            <button
-              onclick="bukaModalDetail(2)"
-              class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-blue-600 text-xs font-semibold text-white flex items-center gap-2 transition"
-            >
-              Details <i class="fa-solid fa-arrow-right text-[10px]"></i>
-            </button>
           </div>
         </div>
       </div>
 
-      <!-- TAB 2: CERTIFICATES -->
+      <!-- TAB 2: SKILLS & KOMPETENSI (DARI PPTX) -->
       <div
-        id="panel-certificates"
+        id="panel-skills"
         class="port-panel hidden grid grid-cols-1 md:grid-cols-3 gap-6"
       >
-        <div class="glass-card p-5 rounded-2xl space-y-3">
-          <div
-            class="h-40 rounded-xl bg-gradient-to-tr from-blue-950 to-slate-800 border border-slate-700 flex flex-col items-center justify-center p-4 text-center"
-          >
-            <i class="fa-solid fa-award text-4xl text-amber-400 mb-2"></i>
-            <span class="text-xs font-bold text-white"
-              >Database Management & SQL</span
+        <!-- Hard Skills -->
+        <div class="glass-card p-6 rounded-2xl space-y-4">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-sky-400"
             >
+              <i class="fa-solid fa-laptop-code"></i>
+            </div>
+            <h4 class="font-bold text-white text-base">Hard Skills</h4>
           </div>
-          <h4 class="font-bold text-sm text-white">
-            Sertifikasi Basis Data & Normalisasi
-          </h4>
-          <p class="text-xs text-slate-400">Ahmad Yardan Alim Al Haidi</p>
+          <ul class="space-y-2 text-xs sm:text-sm text-slate-300">
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+              Administrasi Basis Data MySQL
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+              Simulasi Jaringan Komputer
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+              Preprocessing Data Python
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+              Pengembangan Web
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+              Pemrograman Java
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+              Microsoft Word
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+              Microsoft Excel
+            </li>
+          </ul>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl space-y-3">
-          <div
-            class="h-40 rounded-xl bg-gradient-to-tr from-indigo-950 to-slate-800 border border-slate-700 flex flex-col items-center justify-center p-4 text-center"
-          >
-            <i class="fa-solid fa-laptop-code text-4xl text-sky-400 mb-2"></i>
-            <span class="text-xs font-bold text-white"
-              >Web Development Fundamentals</span
+        <!-- Soft Skills -->
+        <div class="glass-card p-6 rounded-2xl space-y-4">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-xl bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400"
             >
+              <i class="fa-solid fa-handshake"></i>
+            </div>
+            <h4 class="font-bold text-white text-base">Soft Skills</h4>
           </div>
-          <h4 class="font-bold text-sm text-white">
-            HTML, Tailwind CSS & JavaScript
-          </h4>
-          <p class="text-xs text-slate-400">Ahmad Yardan Alim Al Haidi</p>
+          <ul class="space-y-2 text-xs sm:text-sm text-slate-300">
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Komunikasi Efektif
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Kerja Sama Tim
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Pemecahan Masalah
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Manajemen Waktu
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Adaptabilitas
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Ketelitian
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Inisiatif
+            </li>
+          </ul>
         </div>
 
-        <div class="glass-card p-5 rounded-2xl space-y-3">
-          <div
-            class="h-40 rounded-xl bg-gradient-to-tr from-emerald-950 to-slate-800 border border-slate-700 flex flex-col items-center justify-center p-4 text-center"
-          >
-            <i class="fa-solid fa-network-wired text-4xl text-emerald-400 mb-2"></i>
-            <span class="text-xs font-bold text-white"
-              >Computer Networks & VLSM</span
+        <!-- Kompetensi -->
+        <div class="glass-card p-6 rounded-2xl space-y-4">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-xl bg-amber-600/20 border border-amber-500/30 flex items-center justify-center text-amber-400"
+            >
+              <i class="fa-solid fa-compass"></i>
+            </div>
+            <h4 class="font-bold text-white text-base">Kompetensi</h4>
+          </div>
+          <div class="flex flex-wrap gap-2 pt-1">
+            <span
+              class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700 text-xs font-semibold text-slate-200"
+              >Leadership</span
+            >
+            <span
+              class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700 text-xs font-semibold text-slate-200"
+              >Conflict Resolution</span
+            >
+            <span
+              class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700 text-xs font-semibold text-slate-200"
+              >Time Management</span
+            >
+            <span
+              class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700 text-xs font-semibold text-slate-200"
+              >Communication</span
+            >
+            <span
+              class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700 text-xs font-semibold text-slate-200"
+              >Crisis Management</span
+            >
+            <span
+              class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-700 text-xs font-semibold text-slate-200"
+              >Teamwork</span
             >
           </div>
-          <h4 class="font-bold text-sm text-white">
-            Konfigurasi Jaringan & Routing
-          </h4>
-          <p class="text-xs text-slate-400">Ahmad Yardan Alim Al Haidi</p>
         </div>
       </div>
 
-      <!-- TAB 3: ACHIEVEMENTS -->
-      <div
-        id="panel-achievements"
-        class="port-panel hidden grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-        <div class="glass-card p-6 rounded-2xl flex items-start gap-4">
-          <div
-            class="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-xl shrink-0"
-          >
-            <i class="fa-solid fa-trophy"></i>
-          </div>
-          <div>
-            <h4 class="font-bold text-white">
-              Pengembangan Sistem Digitalisasi Inventaris Kampus
-            </h4>
-            <p class="text-xs text-sky-400 mt-0.5">
-              Proyek Sistem Informasi • 2026
-            </p>
-            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-              Merancang dan menerapkan dua aplikasi web terintegrasi berbasis
-              cloud (Vercel & Supabase) untuk kebutuhan operasional kampus.
-            </p>
-          </div>
-        </div>
-
-        <div class="glass-card p-6 rounded-2xl flex items-start gap-4">
-          <div
-            class="w-12 h-12 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-sky-400 text-xl shrink-0"
-          >
-            <i class="fa-solid fa-medal"></i>
-          </div>
-          <div>
-            <h4 class="font-bold text-white">
-              Pengurus Aktif Himpunan Mahasiswa Sistem Informasi
-            </h4>
-            <p class="text-xs text-sky-400 mt-0.5">
-              HIMASI Universitas Sunan Gresik • 2026
-            </p>
-            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-              Berkontribusi dalam kegiatan akademik, pengelolaan informasi, dan
-              pengembangan minat teknologi di lingkungan program studi.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 4: TECH STACK -->
+      <!-- TAB 3: TECH STACK -->
       <div
         id="panel-techstack"
         class="port-panel hidden grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"
@@ -760,62 +1085,90 @@
         <div
           class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-orange-500/50 transition"
         >
-          <i class="fa-brands fa-html5 text-4xl text-orange-500"></i>
+          <img
+            src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg"
+            alt="HTML5"
+            class="w-11 h-11"
+          />
           <span class="text-xs font-bold text-slate-200">HTML5</span>
         </div>
         <div
           class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-sky-400/50 transition"
         >
-          <i class="fa-solid fa-wind text-4xl text-sky-400"></i>
+          <img
+            src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg"
+            alt="Tailwind CSS"
+            class="w-11 h-11"
+          />
           <span class="text-xs font-bold text-slate-200">Tailwind CSS</span>
         </div>
         <div
           class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-yellow-400/50 transition"
         >
-          <i class="fa-brands fa-js text-4xl text-yellow-400"></i>
+          <img
+            src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg"
+            alt="JavaScript"
+            class="w-11 h-11 rounded"
+          />
           <span class="text-xs font-bold text-slate-200">JavaScript</span>
         </div>
         <div
           class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-emerald-400/50 transition"
         >
-          <i class="fa-solid fa-bolt text-4xl text-emerald-400"></i>
+          <img
+            src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg"
+            alt="Supabase"
+            class="w-11 h-11"
+          />
           <span class="text-xs font-bold text-slate-200">Supabase</span>
         </div>
         <div
           class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-blue-400/50 transition"
         >
-          <i class="fa-solid fa-database text-4xl text-blue-400"></i>
+          <img
+            src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg"
+            alt="MySQL"
+            class="w-11 h-11"
+          />
           <span class="text-xs font-bold text-slate-200">MySQL</span>
         </div>
         <div
           class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-red-400/50 transition"
         >
-          <i class="fa-brands fa-java text-4xl text-red-400"></i>
-          <span class="text-xs font-bold text-slate-200">Java OOP</span>
+          <img
+            src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg"
+            alt="Java"
+            class="w-11 h-11"
+          />
+          <span class="text-xs font-bold text-slate-200">Java</span>
         </div>
         <div
           class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-yellow-300/50 transition"
         >
-          <i class="fa-brands fa-python text-4xl text-yellow-300"></i>
+          <img
+            src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg"
+            alt="Python"
+            class="w-11 h-11"
+          />
           <span class="text-xs font-bold text-slate-200">Python</span>
         </div>
         <div
-          class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-orange-600/50 transition"
+          class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-cyan-400/50 transition"
         >
-          <i class="fa-brands fa-git-alt text-4xl text-orange-600"></i>
-          <span class="text-xs font-bold text-slate-200">Git</span>
+          <i class="fa-solid fa-network-wired text-4xl text-cyan-400"></i>
+          <span class="text-xs font-bold text-slate-200">Packet Tracer</span>
         </div>
         <div
-          class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-white/50 transition"
+          class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-blue-500/50 transition"
         >
-          <i class="fa-brands fa-github text-4xl text-white"></i>
-          <span class="text-xs font-bold text-slate-200">GitHub</span>
+          <i class="fa-solid fa-file-word text-4xl text-blue-500"></i>
+          <span class="text-xs font-bold text-slate-200">MS Word</span>
         </div>
         <div
-          class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-white/50 transition"
+          class="glass-card p-6 rounded-2xl flex flex-col items-center justify-center gap-3 hover:border-emerald-500/50 transition"
         >
-          <i class="fa-solid fa-triangle-exclamation text-3xl text-white"></i>
-          <span class="text-xs font-bold text-slate-200">Vercel</span>
+          <i class="fa-solid fa-file-excel text-4xl text-emerald-500"></i>
+          <span class="text-xs font-bold text-slate-200">MS Excel</span>
         </div>
       </div>
     </section>
@@ -875,22 +1228,69 @@
               </div>
               <button
                 type="submit"
-                class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-sm flex items-center justify-center gap-2 transition"
+                id="btnKirimPesan"
+                class="sfx-click w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-sm flex items-center justify-center gap-2 transition"
               >
                 <i class="fa-regular fa-paper-plane"></i> Kirim Pesan
               </button>
             </form>
           </div>
 
-          <!-- FIND ME Card -->
+          <!-- FIND ME Cards -->
           <div class="glass-card p-6 rounded-2xl space-y-3">
-            <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400">
+            <h4
+              class="text-xs font-bold uppercase tracking-widest text-slate-400"
+            >
               FIND ME
             </h4>
             <a
+              id="cardIgLink"
+              href="https://www.instagram.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="sfx-click flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-pink-500/40 transition"
+            >
+              <div class="flex items-center gap-3">
+                <i class="fa-brands fa-instagram text-lg text-pink-400"></i>
+                <div>
+                  <p class="text-xs font-bold text-white">Instagram</p>
+                  <p id="igUsernameLabel" class="text-[11px] text-slate-400">
+                    @ahmadyardan
+                  </p>
+                </div>
+              </div>
+              <i
+                class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500"
+              ></i>
+            </a>
+            <a
+              id="cardTiktokLink"
+              href="https://www.tiktok.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="sfx-click flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-cyan-400/40 transition"
+            >
+              <div class="flex items-center gap-3">
+                <i class="fa-brands fa-tiktok text-lg text-cyan-300"></i>
+                <div>
+                  <p class="text-xs font-bold text-white">TikTok</p>
+                  <p
+                    id="tiktokUsernameLabel"
+                    class="text-[11px] text-slate-400"
+                  >
+                    @ahmadyardan
+                  </p>
+                </div>
+              </div>
+              <i
+                class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500"
+              ></i>
+            </a>
+            <a
               href="https://github.com/aalkepo88-design"
               target="_blank"
-              class="flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-blue-500/40 transition"
+              rel="noopener noreferrer"
+              class="sfx-click flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-blue-500/40 transition"
             >
               <div class="flex items-center gap-3">
                 <i class="fa-brands fa-github text-lg text-white"></i>
@@ -899,33 +1299,26 @@
                   <p class="text-[11px] text-slate-400">@aalkepo88-design</p>
                 </div>
               </div>
-              <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500"></i>
-            </a>
-            <a
-              href="mailto:ahmadyardanalimalhaidi@gmail.com"
-              class="flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-blue-500/40 transition"
-            >
-              <div class="flex items-center gap-3">
-                <i class="fa-solid fa-envelope text-lg text-sky-400"></i>
-                <div>
-                  <p class="text-xs font-bold text-white">Email</p>
-                  <p class="text-[11px] text-slate-400">
-                    ahmadyardanalimalhaidi@gmail.com
-                  </p>
-                </div>
-              </div>
-              <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500"></i>
+              <i
+                class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500"
+              ></i>
             </a>
           </div>
         </div>
 
-        <!-- Kolom Kanan: Komentar Pengunjung -->
+        <!-- Kolom Kanan: Komentar Pengunjung (Supabase Online) -->
         <div class="lg:col-span-7 glass-card p-6 rounded-2xl space-y-6">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div
+            class="flex items-center justify-between border-b border-slate-800 pb-4"
+          >
             <h3 class="text-lg font-bold flex items-center gap-2">
               <i class="fa-regular fa-comments text-sky-400"></i>
-              Komentar (<span id="jumlahKomentar">2</span>)
+              Komentar (<span id="jumlahKomentar">0</span>)
             </h3>
+            <span class="text-[11px] text-emerald-400 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Supabase Online
+            </span>
           </div>
 
           <form id="formKomentar" class="space-y-4">
@@ -953,19 +1346,41 @@
                 class="w-full p-3 rounded-xl bg-slate-950/70 border border-slate-800 focus:border-blue-500 outline-none text-sm"
               ></textarea>
             </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1"
+                >Foto Profil (opsional)</label
+              >
+              <label
+                class="sfx-click flex items-center justify-center gap-2 w-full p-3 rounded-xl bg-slate-950/70 border border-dashed border-slate-700 hover:border-blue-500 cursor-pointer text-xs text-slate-300 transition"
+              >
+                <i class="fa-solid fa-image text-sky-400"></i>
+                <span id="labelFotoKomen">Pilih Foto Profil</span>
+                <input
+                  type="file"
+                  id="komenFoto"
+                  accept="image/*"
+                  class="hidden"
+                  onchange="previewNamaFoto(this)"
+                />
+              </label>
+            </div>
             <button
               type="submit"
-              class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-sm flex items-center justify-center gap-2 transition"
+              id="btnKirimKomen"
+              class="sfx-click w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-sm flex items-center justify-center gap-2 transition"
             >
               <i class="fa-regular fa-paper-plane"></i> Kirim Komentar
             </button>
           </form>
 
-          <!-- Daftar Komentar -->
           <div
             id="daftarKomentar"
-            class="space-y-3 max-h-80 overflow-y-auto pr-1 pt-2"
-          ></div>
+            class="space-y-3 max-h-96 overflow-y-auto pr-1 pt-2"
+          >
+            <p class="text-xs text-slate-500 text-center py-4">
+              Memuat komentar dari database...
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -973,8 +1388,8 @@
     <footer
       class="relative z-10 border-t border-slate-900 py-8 text-center text-xs text-slate-500"
     >
-      © 2026 Ahmad Yardan Alim Al Haidi • Built with HTML, Tailwind CSS &
-      JavaScript
+      © 2026 Ahmad Yardan Alim Al Haidi • S1 Sistem Informasi — Universitas Sunan
+      Gresik
     </footer>
 
     <!-- Modal Detail Proyek -->
@@ -989,7 +1404,7 @@
           <h3 id="modalTitle" class="text-xl font-bold text-white"></h3>
           <button
             onclick="tutupModalDetail()"
-            class="text-slate-400 hover:text-white text-lg"
+            class="sfx-click text-slate-400 hover:text-white text-lg"
           >
             <i class="fa-solid fa-xmark"></i>
           </button>
@@ -997,14 +1412,14 @@
         <p id="modalDesc" class="text-sm text-slate-300 leading-relaxed"></p>
         <div>
           <p class="text-xs font-bold uppercase text-sky-400 mb-2">
-            Teknologi Digunakan
+            Teknologi / Tools
           </p>
           <div id="modalTech" class="flex flex-wrap gap-2"></div>
         </div>
         <div class="pt-3 flex justify-end gap-3">
           <button
             onclick="tutupModalDetail()"
-            class="px-4 py-2 rounded-xl bg-slate-800 text-xs font-semibold"
+            class="sfx-click px-4 py-2 rounded-xl bg-slate-800 text-xs font-semibold"
           >
             Tutup
           </button>
@@ -1012,7 +1427,8 @@
             id="modalLink"
             href="#"
             target="_blank"
-            class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white"
+            rel="noopener noreferrer"
+            class="sfx-click px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white"
             >Buka Aplikasi ↗</a
           >
         </div>
@@ -1020,7 +1436,204 @@
     </div>
 
     <script>
-      // 1. ANIMASI BINTANG JATUH (CANVAS)
+      // KONFIGURASI SOSMED & EMAIL (GANTI USERNAME IG & TIKTOK ANDA DI SINI)
+      const SOCIAL_CONFIG = {
+        instagramUsername: "ahmadyardan",
+        tiktokUsername: "ahmadyardan",
+        emailTujuan: "ahmadyardanalimalhaidi@gmail.com",
+      };
+
+      const igUrl = `https://www.instagram.com/${SOCIAL_CONFIG.instagramUsername}`;
+      const tiktokUrl = `https://www.tiktok.com/@${SOCIAL_CONFIG.tiktokUsername}`;
+      document.getElementById("heroIgLink").href = igUrl;
+      document.getElementById("cardIgLink").href = igUrl;
+      document.getElementById("igUsernameLabel").textContent =
+        "@" + SOCIAL_CONFIG.instagramUsername;
+
+      document.getElementById("heroTiktokLink").href = tiktokUrl;
+      document.getElementById("cardTiktokLink").href = tiktokUrl;
+      document.getElementById("tiktokUsernameLabel").textContent =
+        "@" + SOCIAL_CONFIG.tiktokUsername;
+
+      // KONEKSI DATABASE SUPABASE
+      const SUPABASE_URL = "https://wbhlnvdigjrwipovinjk.supabase.co";
+      const SUPABASE_KEY = "sb_publishable_YppIn9hZwuKSeDjIOz5vSQ_LJpsaDwX";
+      const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
+
+      // 1. EFEK SUARA KLIK UI
+      let soundEnabled = true;
+      let sharedAudioCtx = null;
+
+      function playClickSound() {
+        if (!soundEnabled) return;
+        try {
+          if (!sharedAudioCtx) {
+            sharedAudioCtx = new (window.AudioContext ||
+              window.webkitAudioContext)();
+          }
+          if (sharedAudioCtx.state === "suspended") {
+            sharedAudioCtx.resume();
+          }
+          const now = sharedAudioCtx.currentTime;
+          const osc = sharedAudioCtx.createOscillator();
+          const gain = sharedAudioCtx.createGain();
+
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(620, now);
+          osc.frequency.exponentialRampToValueAtTime(180, now + 0.065);
+
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+
+          osc.connect(gain);
+          gain.connect(sharedAudioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.07);
+        } catch (e) {}
+      }
+
+      function toggleSound() {
+        soundEnabled = !soundEnabled;
+        const icon = document.getElementById("soundIcon");
+        if (soundEnabled) {
+          icon.className = "fa-solid fa-volume-high text-xs text-sky-400";
+          playClickSound();
+        } else {
+          icon.className = "fa-solid fa-volume-xmark text-xs text-slate-400";
+        }
+      }
+
+      document.addEventListener("click", (e) => {
+        if (e.target.closest(".sfx-click, button, a")) {
+          playClickSound();
+        }
+      });
+
+      // 2. NAVBAR AKTIF (KLIK & SCROLL SPY)
+      function setActiveNav(sectionId) {
+        document.querySelectorAll(".nav-link").forEach((link) => {
+          const isTarget = link.getAttribute("data-section") === sectionId;
+          link.className = `nav-link sfx-click px-4 py-1.5 rounded-full text-xs sm:text-sm transition-all duration-200 ${
+            isTarget ? "nav-pill-active" : "nav-pill-inactive"
+          }`;
+        });
+      }
+
+      document.querySelectorAll(".nav-link").forEach((link) => {
+        link.addEventListener("click", () => {
+          setActiveNav(link.getAttribute("data-section"));
+        });
+      });
+
+      window.addEventListener("scroll", () => {
+        const sections = ["home", "about", "portfolio", "contact"];
+        const scrollPos = window.scrollY + 260;
+        for (const id of sections) {
+          const el = document.getElementById(id);
+          if (
+            el &&
+            scrollPos >= el.offsetTop &&
+            scrollPos < el.offsetTop + el.offsetHeight
+          ) {
+            setActiveNav(id);
+            break;
+          }
+        }
+      });
+
+      // 3. FISIKA LANYARD ID CARD 2D + FLIP 3D
+      const rig = document.getElementById("lanyardRig");
+      const cardInner = document.getElementById("idCardInner");
+      const strapLeft = document.getElementById("strapLeft");
+      const strapRight = document.getElementById("strapRight");
+      const strapHighlight = document.getElementById("strapHighlight");
+
+      let posX = 0,
+        posY = 0;
+      let velX = 0,
+        velY = 0;
+      let isDragging = false;
+      let startPointerX = 0,
+        startPointerY = 0;
+      let startPosX = 0,
+        startPosY = 0;
+      let dragDistance = 0;
+
+      rig.addEventListener("pointerdown", (e) => {
+        isDragging = true;
+        dragDistance = 0;
+        startPointerX = e.clientX;
+        startPointerY = e.clientY;
+        startPosX = posX;
+        startPosY = posY;
+        rig.setPointerCapture(e.pointerId);
+      });
+
+      rig.addEventListener("pointermove", (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startPointerX;
+        const dy = e.clientY - startPointerY;
+        dragDistance = Math.hypot(dx, dy);
+
+        posX = Math.max(-140, Math.min(140, startPosX + dx));
+        posY = Math.max(-45, Math.min(130, startPosY + dy));
+        velX = 0;
+        velY = 0;
+      });
+
+      rig.addEventListener("pointerup", () => {
+        if (!isDragging) return;
+        isDragging = false;
+        if (dragDistance < 6) {
+          playClickSound();
+          cardInner.classList.toggle("rotate-y-180");
+        }
+      });
+
+      function updateLanyardPhysics() {
+        if (!isDragging) {
+          const stiffness = 0.075;
+          const damping = 0.88;
+          const ax = -stiffness * posX;
+          const ay = -stiffness * posY;
+          velX = (velX + ax) * damping;
+          velY = (velY + ay) * damping;
+          posX += velX;
+          posY += velY;
+        }
+
+        const tiltAngle = posX * -0.14 + velX * -0.4;
+        rig.style.transform = `translate3d(${posX}px, ${posY}px, 0) rotate(${tiltAngle}deg)`;
+
+        const clipX = 180 + posX;
+        const clipY = 120 + posY;
+        strapLeft.setAttribute("x2", clipX - 6);
+        strapLeft.setAttribute("y2", clipY);
+        strapRight.setAttribute("x2", clipX + 6);
+        strapRight.setAttribute("y2", clipY);
+        strapHighlight.setAttribute("x2", clipX - 6);
+        strapHighlight.setAttribute("y2", clipY);
+
+        requestAnimationFrame(updateLanyardPhysics);
+      }
+      updateLanyardPhysics();
+
+      // 4. EFEK LENSA KURSOR PADA FOTO CUTOUT ABOUT ME
+      const cutoutBox = document.getElementById("aboutCutoutBox");
+      const revealLayer = cutoutBox.querySelector(".about-reveal-layer");
+
+      cutoutBox.addEventListener("mousemove", (e) => {
+        const rect = cutoutBox.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        revealLayer.style.setProperty("--mx", `${x}px`);
+        revealLayer.style.setProperty("--my", `${y}px`);
+      });
+
+      // 5. ANIMASI BINTANG JATUH & TYPING EFFECT
       const canvas = document.getElementById("starfieldCanvas");
       const ctx = canvas.getContext("2d");
       let stars = [];
@@ -1042,7 +1655,7 @@
         });
       }
 
-      function spawnMeteor() {
+      setInterval(() => {
         meteors.push({
           x: Math.random() * canvas.width * 1.2,
           y: -20,
@@ -1050,19 +1663,16 @@
           speed: Math.random() * 6 + 5,
           alpha: 1,
         });
-      }
-      setInterval(spawnMeteor, 2200);
+      }, 2200);
 
       function animateSpace() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         stars.forEach((s) => {
           ctx.fillStyle = `rgba(226, 232, 240, ${s.alpha})`;
           ctx.beginPath();
           ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
           ctx.fill();
         });
-
         meteors.forEach((m, index) => {
           const grad = ctx.createLinearGradient(
             m.x,
@@ -1072,7 +1682,6 @@
           );
           grad.addColorStop(0, `rgba(125, 211, 252, ${m.alpha})`);
           grad.addColorStop(1, "rgba(125, 211, 252, 0)");
-
           ctx.strokeStyle = grad;
           ctx.lineWidth = 1.5;
           ctx.beginPath();
@@ -1083,25 +1692,21 @@
           m.x -= m.speed;
           m.y += m.speed;
           m.alpha -= 0.012;
-
-          if (m.alpha <= 0 || m.y > canvas.height + 100) {
+          if (m.alpha <= 0 || m.y > canvas.height + 100)
             meteors.splice(index, 1);
-          }
         });
-
         requestAnimationFrame(animateSpace);
       }
       animateSpace();
 
-      // 2. TYPING EFFECT HERO
       const roles = [
-        "Information Systems Student",
         "Full-Stack Web Developer",
-        "UI/UX & Database Enthusiast",
+        "Database & Network Enthusiast",
+        "S1 Sistem Informasi — USG",
       ];
-      let roleIndex = 0;
-      let charIndex = 0;
-      let isDeleting = false;
+      let roleIndex = 0,
+        charIndex = 0,
+        isDeleting = false;
       const typingEl = document.getElementById("typingText");
 
       function typeLoop() {
@@ -1109,7 +1714,6 @@
         typingEl.textContent = isDeleting
           ? current.substring(0, charIndex - 1)
           : current.substring(0, charIndex + 1);
-
         charIndex += isDeleting ? -1 : 1;
 
         if (!isDeleting && charIndex === current.length) {
@@ -1125,84 +1729,32 @@
       }
       typeLoop();
 
-      // 3. FISIKA LANYARD ID CARD & FLIP 3D
-      const rig = document.getElementById("lanyardRig");
-      const cardInner = document.getElementById("idCardInner");
-      let angle = 0.06;
-      let velocity = 0;
-      let isDragging = false;
-      let startX = 0;
-      let moved = false;
-
-      rig.addEventListener("pointerdown", (e) => {
-        isDragging = true;
-        moved = false;
-        startX = e.clientX;
-        rig.setPointerCapture(e.pointerId);
-      });
-
-      rig.addEventListener("pointermove", (e) => {
-        if (!isDragging) return;
-        const dx = e.clientX - startX;
-        if (Math.abs(dx) > 4) moved = true;
-        angle = Math.max(-0.45, Math.min(0.45, dx * -0.0035));
-        velocity = 0;
-      });
-
-      rig.addEventListener("pointerup", () => {
-        if (!isDragging) return;
-        isDragging = false;
-        if (!moved) {
-          cardInner.classList.toggle("rotate-y-180");
-        }
-      });
-
-      function physicsLoop() {
-        if (!isDragging) {
-          const stiffness = 0.045;
-          const damping = 0.94;
-          const acceleration = -stiffness * angle;
-          velocity = (velocity + acceleration) * damping;
-          angle += velocity;
-        }
-        rig.style.transform = `rotate(${angle}rad)`;
-        requestAnimationFrame(physicsLoop);
-      }
-      physicsLoop();
-
-      // 4. NAVIGASI TAB PORTFOLIO
+      // 6. PORTFOLIO TABS & MODAL DETAIL
       function switchPortfolioTab(tabName, btn) {
-        document.querySelectorAll(".port-panel").forEach((panel) => {
-          panel.classList.add("hidden");
-        });
+        document
+          .querySelectorAll(".port-panel")
+          .forEach((p) => p.classList.add("hidden"));
         document.getElementById("panel-" + tabName).classList.remove("hidden");
 
         document.querySelectorAll(".port-tab").forEach((t) => {
           t.className =
-            "port-tab px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold glass-card text-slate-300 hover:text-white flex items-center gap-2 transition";
+            "port-tab sfx-click px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold glass-card text-slate-300 hover:text-white flex items-center gap-2 transition";
         });
         btn.className =
-          "port-tab px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/30 flex items-center gap-2 transition";
+          "port-tab sfx-click px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/30 flex items-center gap-2 transition";
       }
 
-      // 5. MODAL DETAIL PROYEK
       const projectDetails = [
         {
           title: "Aplikasi Web Peminjaman Barang Kampus",
-          desc: "Sistem digitalisasi inventaris dan peminjaman aset kampus yang memisahkan portal Mahasiswa dan Admin. Mendukung keranjang multi-unit/multi-barang, pengurangan dan pengembalian stok otomatis saat disetujui atau selesai, serta ekspor laporan ke file Excel (.xlsx).",
-          tech: ["HTML5", "Tailwind CSS", "JavaScript", "Supabase", "SheetJS"],
+          desc: "Membangun sistem informasi berbasis web untuk mendigitalisasi proses peminjaman barang dan ruangan di kampus secara terpusat. Dilengkapi dengan dua portal antarmuka terpisah (Mahasiswa & Admin), sistem login pengguna yang aman, manajemen stok barang real-time, keranjang multi-unit, ekspor laporan Excel, dan pelacakan riwayat status pengajuan.",
+          tech: ["HTML", "Tailwind CSS", "JavaScript", "Supabase", "SheetJS"],
           link: "https://peminjaman-mahasiswa.vercel.app",
         },
         {
-          title: "Aplikasi Web Pelaporan & Pencarian Barang Hilang",
-          desc: "Pusat informasi kehilangan dan penemuan barang di lingkungan kampus. Pengguna dapat membuat laporan baru, memfilter berdasarkan kategori barang, dan melakukan pencarian cepat secara real-time.",
-          tech: ["HTML5", "Tailwind CSS", "JavaScript", "Supabase"],
-          link: "https://user-lostfound-portal.vercel.app",
-        },
-        {
-          title: "Perancangan Basis Data & Sistem Berorientasi Objek",
-          desc: "Studi kasus perancangan sistem informasi menggunakan pemodelan Entity Relationship Diagram (ERD), normalisasi tabel hingga 3NF di MySQL, serta pengembangan logika OOP menggunakan bahasa Java.",
-          tech: ["MySQL", "Java OOP", "Python", "ERD Modeling"],
+          title: "Perancangan Basis Data & Topografi Jaringan",
+          desc: "Perancangan skema basis data relasional MySQL dengan normalisasi hingga 3NF, simulasi topografi jaringan komputer menggunakan Cisco Packet Tracer, serta pengembangan struktur data dan pemrograman berorientasi objek berbasis Java.",
+          tech: ["MySQL", "Cisco Packet Tracer", "Java OOP", "Python"],
           link: "https://github.com/aalkepo88-design",
         },
       ];
@@ -1212,15 +1764,12 @@
         document.getElementById("modalTitle").textContent = p.title;
         document.getElementById("modalDesc").textContent = p.desc;
         document.getElementById("modalLink").href = p.link;
-
-        const techContainer = document.getElementById("modalTech");
-        techContainer.innerHTML = p.tech
+        document.getElementById("modalTech").innerHTML = p.tech
           .map(
             (t) =>
               `<span class="px-3 py-1 rounded-lg bg-blue-600/20 border border-blue-500/30 text-xs text-sky-300 font-medium">${t}</span>`
           )
           .join("");
-
         document.getElementById("modalProject").classList.remove("hidden");
       }
 
@@ -1228,94 +1777,153 @@
         document.getElementById("modalProject").classList.add("hidden");
       }
 
-      // 6. FORM PESAN & KOMENTAR PENGUNJUNG
-      document.getElementById("formPesan").addEventListener("submit", (e) => {
-        e.preventDefault();
-        alert("Terima kasih! Pesan Anda telah terkirim ke Ahmad Yardan.");
-        e.target.reset();
-      });
-
-      const defaultKomentar = [
-        {
-          nama: "Rekan HIMASI USG",
-          isi: "Keren banget tampilan kartu lanyard interaktifnya, sukses terus proyeknya!",
-          waktu: "Baru saja",
-        },
-        {
-          nama: "Pengunjung",
-          isi: "Sistem peminjaman barang kampusnya rapi dan sangat membantu.",
-          waktu: "1 jam lalu",
-        },
-      ];
-
-      let daftarKomen =
-        JSON.parse(localStorage.getItem("yardan_portofolio_komen")) ||
-        defaultKomentar;
-
-      function renderKomentar() {
-        const container = document.getElementById("daftarKomentar");
-        document.getElementById("jumlahKomentar").textContent =
-          daftarKomen.length;
-        container.innerHTML = daftarKomen
-          .map(
-            (k) => `
-          <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800/80 flex items-start gap-3">
-            <div class="w-8 h-8 rounded-full bg-blue-600/30 border border-blue-500/40 flex items-center justify-center text-xs font-bold text-sky-300 shrink-0">
-              ${k.nama.charAt(0).toUpperCase()}
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex justify-between items-center gap-2">
-                <p class="text-xs font-bold text-white truncate">${k.nama}</p>
-                <span class="text-[10px] text-slate-500 shrink-0">${k.waktu}</span>
-              </div>
-              <p class="text-xs text-slate-300 mt-1 break-words">${k.isi}</p>
-            </div>
-          </div>`
-          )
-          .join("");
-      }
-      renderKomentar();
-
+      // 7. KIRIM PESAN EMAIL + SIMPAN KE SUPABASE
       document
-        .getElementById("formKomentar")
-        .addEventListener("submit", (e) => {
+        .getElementById("formPesan")
+        .addEventListener("submit", async (e) => {
           e.preventDefault();
-          const nama = document.getElementById("komenNama").value.trim();
-          const isi = document.getElementById("komenIsi").value.trim();
-          if (!nama || !isi) return;
+          const btn = document.getElementById("btnKirimPesan");
+          const nama = document.getElementById("kontakNama").value.trim();
+          const email = document.getElementById("kontakEmail").value.trim();
+          const pesan = document.getElementById("kontakPesan").value.trim();
 
-          daftarKomen.unshift({ nama, isi, waktu: "Baru saja" });
-          localStorage.setItem(
-            "yardan_portofolio_komen",
-            JSON.stringify(daftarKomen)
+          btn.disabled = true;
+          btn.innerHTML = "Mengirim...";
+
+          await supabaseClient
+            .from("pesan_kontak")
+            .insert([{ nama, email, pesan }]);
+
+          const subject = encodeURIComponent(
+            `Pesan Portofolio dari ${nama}`
           );
-          renderKomentar();
+          const body = encodeURIComponent(
+            `Nama: ${nama}\nEmail: ${email}\n\nPesan:\n${pesan}`
+          );
+          window.location.href = `mailto:${SOCIAL_CONFIG.emailTujuan}?subject=${subject}&body=${body}`;
+
+          btn.disabled = false;
+          btn.innerHTML =
+            '<i class="fa-regular fa-paper-plane"></i> Kirim Pesan';
           e.target.reset();
         });
 
-      // 7. AMBIENT CHIME TOGGLE (WEB AUDIO API)
-      let audioCtx = null;
-      let isPlaying = false;
-      function toggleAmbientSound() {
-        const icon = document.getElementById("audioIcon");
-        if (!isPlaying) {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = "sine";
-          osc.frequency.setValueAtTime(174, audioCtx.currentTime);
-          gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start();
-          isPlaying = true;
-          icon.className = "fa-solid fa-volume-high text-xs text-sky-400";
+      // 8. KOMENTAR ONLINE TERHUBUNG KE SUPABASE
+      function previewNamaFoto(input) {
+        const label = document.getElementById("labelFotoKomen");
+        if (input.files && input.files[0]) {
+          label.textContent = input.files[0].name;
         } else {
-          if (audioCtx) audioCtx.close();
-          isPlaying = false;
-          icon.className = "fa-solid fa-volume-xmark text-xs";
+          label.textContent = "Pilih Foto Profil";
         }
       }
+
+      function resizeImageToBase64(file) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => {
+              const c = document.createElement("canvas");
+              const size = 96;
+              c.width = size;
+              c.height = size;
+              const cx = c.getContext("2d");
+              cx.drawImage(img, 0, 0, size, size);
+              resolve(c.toDataURL("image/jpeg", 0.75));
+            };
+            img.src = ev.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function muatKomentarSupabase() {
+        const container = document.getElementById("daftarKomentar");
+        const { data, error } = await supabaseClient
+          .from("komentar_portofolio")
+          .select("*")
+          .order("id", { ascending: false });
+
+        if (error) {
+          container.innerHTML = `<p class="text-xs text-rose-400 text-center py-4">Pastikan tabel <b>komentar_portofolio</b> sudah dibuat di Supabase.</p>`;
+          return;
+        }
+
+        document.getElementById("jumlahKomentar").textContent = data.length;
+
+        if (data.length === 0) {
+          container.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Belum ada komentar. Jadilah yang pertama berkomentar!</p>`;
+          return;
+        }
+
+        container.innerHTML = data
+          .map((k) => {
+            const waktu = k.created_at
+              ? new Date(k.created_at).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })
+              : "Baru saja";
+
+            const avatarHtml = k.foto_url
+              ? `<img src="${k.foto_url}" alt="${k.nama}" class="w-9 h-9 rounded-full object-cover border border-blue-500/40 shrink-0" />`
+              : `<div class="w-9 h-9 rounded-full bg-blue-600/30 border border-blue-500/40 flex items-center justify-center text-xs font-bold text-sky-300 shrink-0">${k.nama.charAt(0).toUpperCase()}</div>`;
+
+            return `
+            <div class="p-3.5 rounded-xl bg-slate-950/75 border border-slate-800/90 flex items-start gap-3">
+              ${avatarHtml}
+              <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-center gap-2">
+                  <p class="text-xs font-bold text-white truncate">${k.nama}</p>
+                  <span class="text-[10px] text-slate-500 shrink-0">${waktu}</span>
+                </div>
+                <p class="text-xs text-slate-300 mt-1 break-words">${k.komentar}</p>
+              </div>
+            </div>`;
+          })
+          .join("");
+      }
+
+      document
+        .getElementById("formKomentar")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById("btnKirimKomen");
+          const nama = document.getElementById("komenNama").value.trim();
+          const komentar = document.getElementById("komenIsi").value.trim();
+          const fileInput = document.getElementById("komenFoto");
+
+          if (!nama || !komentar) return;
+
+          btn.disabled = true;
+          btn.innerHTML = "Menyimpan ke Supabase...";
+
+          let fotoUrl = null;
+          if (fileInput.files && fileInput.files[0]) {
+            fotoUrl = await resizeImageToBase64(fileInput.files[0]);
+          }
+
+          const { error } = await supabaseClient
+            .from("komentar_portofolio")
+            .insert([{ nama, komentar, foto_url: fotoUrl }]);
+
+          if (error) {
+            alert("Gagal mengirim komentar: " + error.message);
+          } else {
+            e.target.reset();
+            document.getElementById("labelFotoKomen").textContent =
+              "Pilih Foto Profil";
+            await muatKomentarSupabase();
+          }
+
+          btn.disabled = false;
+          btn.innerHTML =
+            '<i class="fa-regular fa-paper-plane"></i> Kirim Komentar';
+        });
+
+      muatKomentarSupabase();
     </script>
   </body>
 </html>
